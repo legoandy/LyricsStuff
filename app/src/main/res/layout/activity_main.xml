@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     tools:context="legoandy.com.lyricsstuff.MainActivity"
     android:padding="5px"
+    android:keepScreenOn="true"
     android:background="@color/black">
 
     <ScrollView
