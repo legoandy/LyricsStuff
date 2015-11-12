@@ -49,8 +49,9 @@ public class MainActivity extends Activity {
                     String text = readString(databaseInputStream);
                     tv.setText(text);
 
+                    // Jump to the last position after 1 second to make sure text view is properly
+                    // set.
                     final int lastScroll = mPreferences.getInt(LAST_POSITION, 0);
-                    Log.e(TAG, "Jump to scroll: " + lastScroll);
                     mHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -65,14 +66,15 @@ public class MainActivity extends Activity {
         });
     }
 
-    static String readString(InputStream is) throws IOException {
+    private static String readString(InputStream is) throws IOException {
         char[] buf = new char[2048];
         Reader r = new InputStreamReader(is, "UTF-8");
         StringBuilder s = new StringBuilder();
         while (true) {
             int n = r.read(buf);
-            if (n < 0)
+            if (n < 0) {
                 break;
+            }
             s.append(buf, 0, n);
         }
         return s.toString();
@@ -84,7 +86,6 @@ public class MainActivity extends Activity {
         gestureDetector.setBaseListener( new GestureDetector.BaseListener() {
             @Override
             public boolean onGesture(Gesture gesture) {
-                Log.e(TAG, "Gesture: " + gesture);
                 if (gesture == Gesture.TAP) {
                     // do something on tap
                     return true;
@@ -111,11 +112,8 @@ public class MainActivity extends Activity {
             public boolean onScroll(float displacement, float delta, float velocity) {
                 mScrollView.smoothScrollBy(0, Math.round(delta));
                 int lastScroll = mScrollView.getScrollY();
-                Log.e(TAG, "Scroll Y: " + lastScroll);
                 mPreferences.edit().putInt(LAST_POSITION, lastScroll).apply();
 
-                int newLastScroll = mPreferences.getInt(LAST_POSITION, 0);
-                Log.e(TAG, "Jump to scroll: " + newLastScroll);
                 return true;
             }
         });
