@@ -2,8 +2,12 @@ package legoandy.com.lyricsstuff;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ScrollView;
@@ -20,13 +24,18 @@ import java.io.Reader;
 public class MainActivity extends Activity {
 
     private static final String TAG = "LyricsMainActivity";
+    private static final String LAST_POSITION = "LAST_POSITION";
     private GestureDetector mGestureDetector;
     private ScrollView mScrollView;
+    private SharedPreferences mPreferences;
+    private Handler mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mHandler = new Handler(Looper.getMainLooper());
 
         mGestureDetector = createGestureDetector(this);
         mScrollView = (ScrollView) findViewById(R.id.scrollView);
@@ -39,6 +48,15 @@ public class MainActivity extends Activity {
                 try {
                     String text = readString(databaseInputStream);
                     tv.setText(text);
+
+                    final int lastScroll = mPreferences.getInt(LAST_POSITION, 0);
+                    Log.e(TAG, "Jump to scroll: " + lastScroll);
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mScrollView.scrollTo(0, lastScroll);
+                        }
+                    }, 1000);
                 } catch (IOException e) {
                     Log.e(TAG, "Cannot read lyrics.");
                     e.printStackTrace();
@@ -92,6 +110,12 @@ public class MainActivity extends Activity {
             @Override
             public boolean onScroll(float displacement, float delta, float velocity) {
                 mScrollView.smoothScrollBy(0, Math.round(delta));
+                int lastScroll = mScrollView.getScrollY();
+                Log.e(TAG, "Scroll Y: " + lastScroll);
+                mPreferences.edit().putInt(LAST_POSITION, lastScroll).apply();
+
+                int newLastScroll = mPreferences.getInt(LAST_POSITION, 0);
+                Log.e(TAG, "Jump to scroll: " + newLastScroll);
                 return true;
             }
         });
