@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -40,6 +41,9 @@ public class MainActivity extends Activity {
         mGestureDetector = createGestureDetector(this);
         mScrollView = (ScrollView) findViewById(R.id.scrollView);
 
+        final View progressFrame = findViewById(R.id.progressFrame);
+
+
         final TextView tv = (TextView) findViewById(R.id.textView);
         AsyncTask.execute(new Runnable() {
             @Override
@@ -56,11 +60,13 @@ public class MainActivity extends Activity {
                         @Override
                         public void run() {
                             mScrollView.scrollTo(0, lastScroll);
+                            progressFrame.setVisibility(View.GONE);
                         }
                     }, 1000);
                 } catch (IOException e) {
                     Log.e(TAG, "Cannot read lyrics.");
                     e.printStackTrace();
+                    tv.setText(R.string.problem_reading_lyrics);
                 }
             }
         });
