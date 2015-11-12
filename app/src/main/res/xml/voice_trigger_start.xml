@@ -11,4 +11,4 @@
      limitations under the License.
 -->
 
-<trigger command="PLAY_A_GAME" />
+<trigger keyword="@string/glass_voice_trigger" />

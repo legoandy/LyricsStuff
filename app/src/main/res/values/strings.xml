@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">LyricsStuff</string>
+
+    <string name="glass_voice_trigger">Lyrics</string>
 </resources>
